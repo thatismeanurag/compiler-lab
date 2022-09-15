@@ -1,49 +1,67 @@
-%{
-#include<string.h>
-float p,flag,Ans;
-char cc;
-%}
-digit [0-9]+
-op "+"|"-"|"*"|"/"
+% {
+  int op = 0,i;
+  float a, b;
+% }
+  
+dig [0-9]+|([0-9]*)"."([0-9]+)
+add "+"
+sub "-"
+mul "*"
+div "/"
+pow "^"
+ln \n
 %%
-{digit} {p=atof(yytext);
-if(flag==0)
-{
-Ans=p;
-flag=1;
-}
-else
-{
-switch(cc){
-case '+':Ans=Ans+p;
-break;
-case '-':Ans=Ans-p;
-break;
-case '*':Ans=Ans*p;
-break;
-case '/':Ans=Ans/p;
-
-}
-}
-}
-{op} {if(strcmp(yytext,"+")==0)
-      cc='+';
-      if(strcmp(yytext,"-")==0)
-      cc='-';
-      if(strcmp(yytext,"*")==0)
-      cc='*';
-      if(strcmp(yytext,"/")==0)
-      cc='/';}
-! {printf("\n Final Answer =:%f",Ans);exit(0);}
+  
+/* digi() is a user defined function */
+{dig} {digi();} 
+{add} {op=1;}
+{sub} {op=2;}
+{mul} {op=3;}
+{div} {op=4;}
+{pow} {op=5;}
+{ln} {printf("\n The Answer :%f\n\n",a);}
+  
 %%
-int yywrap()
+digi()
 {
-return 1;
+ if(op==0)
+  
+/* atof() is used to convert 
+      - the ASCII input to float */
+ a=atof(yytext); 
+  
+ else
+ {
+ b=atof(yytext);
+  
+ switch(op)
+ {
+   case 1:a=a+b;
+    break;
+  
+   case 2:a=a-b;
+   break;
+   
+   case 3:a=a*b;
+   break;
+   
+   case 4:a=a/b;
+   break;
+   
+   case 5:for(i=a;b>1;b--)
+   a=a*i;
+   break;
+  }
+ op=0;
+ }
 }
-int main()
+  
+main(int argv,char *argc[])
 {
-flag=Ans=0;
-printf("\n Enter the Expression:");
-yylex();
-return 0;
+ yylex();
 }
+  
+yywrap()
+ {
+  return 1;
+ }
